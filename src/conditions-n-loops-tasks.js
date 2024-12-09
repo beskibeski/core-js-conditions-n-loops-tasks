@@ -119,8 +119,23 @@ function isIsoscelesTriangle(a, b, c) {
  *  10  => X
  *  26  => XXVI
  */
-function convertToRomanNumerals(/* num */) {
-  throw new Error('Not implemented');
+function convertToRomanNumerals(num) {
+  const romanNumbers = [
+    { arabic: 1, roman: 'I' },
+    { arabic: 4, roman: 'IV' },
+    { arabic: 5, roman: 'V' },
+    { arabic: 9, roman: 'IX' },
+    { arabic: 10, roman: 'X' },
+  ];
+  let number = num;
+  let romanNumber = '';
+  for (let i = romanNumbers.length - 1; number > 0; i -= 1) {
+    while (number >= romanNumbers[i].arabic) {
+      romanNumber = `${romanNumber}${romanNumbers[i].roman}`;
+      number -= romanNumbers[i].arabic;
+    }
+  }
+  return romanNumber;
 }
 
 /**
@@ -273,8 +288,21 @@ function isContainNumber(num, digit) {
  *  [2, 3, 9, 5] => 2       => 2 + 3 === 5 then balance element is 9 and its index = 2
  *  [1, 2, 3, 4, 5] => -1   => no balance element
  */
-function getBalanceIndex(/* arr */) {
-  throw new Error('Not implemented');
+function getBalanceIndex(arr) {
+  for (let i = 0; i < arr.length; i += 1) {
+    let leftSum = 0;
+    for (let j = 0; j <= i; j += 1) {
+      leftSum += arr[j];
+    }
+    let rightSum = 0;
+    for (let j = arr.length - 1; j > i; j -= 1) {
+      if (rightSum === leftSum && j - i === 1) {
+        return i + 1;
+      }
+      rightSum += arr[j];
+    }
+  }
+  return -1;
 }
 
 /**
@@ -356,8 +384,27 @@ function sortByAsc(/* arr */) {
  *  '012345', 3 => '024135' => '043215' => '031425'
  *  'qwerty', 3 => 'qetwry' => 'qtrewy' => 'qrwtey'
  */
-function shuffleChar(/* str, iterations */) {
-  throw new Error('Not implemented');
+function shuffleChar(str, iterations) {
+  const makeString = (string) => {
+    let newStr = '';
+    let newStrOdd = '';
+    let newStrEven = '';
+    for (let i = 0, j = 1; i < str.length && j < str.length; i += 2, j += 2) {
+      newStrEven = `${newStrEven}${string[i]}`;
+      newStrOdd = `${newStrOdd}${string[j]}`;
+    }
+    newStr = `${newStrEven}${newStrOdd}`;
+    return newStr;
+  };
+  let strRepeated = '';
+  for (let i = 0; i < iterations; i += 1) {
+    if (i === 0) {
+      strRepeated = makeString(str);
+    } else {
+      strRepeated = makeString(strRepeated);
+    }
+  }
+  return strRepeated;
 }
 
 /**
