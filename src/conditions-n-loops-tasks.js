@@ -422,26 +422,36 @@ function sortByAsc(/* arr */) {
  *  'qwerty', 3 => 'qetwry' => 'qtrewy' => 'qrwtey'
  */
 function shuffleChar(str, iterations) {
-  const makeString = (string) => {
-    let newStr = '';
-    let newStrOdd = '';
-    let newStrEven = '';
-    for (let i = 0, j = 1; i < str.length && j < str.length; i += 2, j += 2) {
-      newStrEven = `${newStrEven}${string[i]}`;
-      newStrOdd = `${newStrOdd}${string[j]}`;
+  function makeOneIteration(string) {
+    let oddStr = '';
+    let evenStr = '';
+    for (let i = 0; i < string.length; i += 1) {
+      if (i % 2 !== 0) {
+        oddStr = `${oddStr}${string[i]}`;
+      } else {
+        evenStr = `${evenStr}${string[i]}`;
+      }
     }
-    newStr = `${newStrEven}${newStrOdd}`;
-    return newStr;
-  };
-  let strRepeated = '';
-  for (let i = 0; i < iterations; i += 1) {
-    if (i === 0) {
-      strRepeated = makeString(str);
-    } else {
-      strRepeated = makeString(strRepeated);
-    }
+    return evenStr + oddStr;
   }
-  return strRepeated;
+
+  const stringMutations = {};
+  let stringForMutation = str;
+  let iterationsForMutation = 0;
+  while (!Object.hasOwn(stringMutations, stringForMutation)) {
+    stringMutations[stringForMutation] = iterationsForMutation;
+    stringForMutation = makeOneIteration(stringForMutation);
+    iterationsForMutation += 1;
+  }
+
+  let countMutations = iterations % iterationsForMutation;
+  let resultString = str;
+
+  while (countMutations > 0) {
+    resultString = makeOneIteration(resultString);
+    countMutations -= 1;
+  }
+  return resultString;
 }
 
 /**
@@ -461,8 +471,50 @@ function shuffleChar(str, iterations) {
  * @param {number} number The source number
  * @returns {number} The nearest larger number, or original number if none exists.
  */
-function getNearestBigger(/* number */) {
-  throw new Error('Not implemented');
+function getNearestBigger(number) {
+  const numberToArray = [];
+  let newNumber = number;
+  while (newNumber > 0) {
+    numberToArray.unshift(newNumber % 10);
+    newNumber = Math.floor(newNumber / 10);
+  }
+  let firstPartOfNumber = [];
+  let secondPartOfNumber = [];
+  for (let i = numberToArray.length; i > 1; i -= 1) {
+    if (numberToArray[i] > numberToArray[i - 1]) {
+      let numberToReverseFromStart = 0;
+      let numberToReverseFromEnd = 0;
+      numberToReverseFromStart = numberToArray[i - 1];
+      firstPartOfNumber = numberToArray;
+      secondPartOfNumber = numberToArray.splice(i - 1);
+      secondPartOfNumber.shift();
+      secondPartOfNumber = secondPartOfNumber.sort((a, b) => a - b);
+      let indexToDelete = 0;
+      numberToReverseFromEnd = secondPartOfNumber.find((element, index) => {
+        indexToDelete = index;
+        return element > numberToReverseFromStart;
+      });
+
+      secondPartOfNumber.splice(indexToDelete, 1);
+      secondPartOfNumber.push(numberToReverseFromStart);
+      secondPartOfNumber.sort((a, b) => a - b);
+      const newArrayOfNumbers = [
+        ...firstPartOfNumber,
+        numberToReverseFromEnd,
+        ...secondPartOfNumber,
+      ];
+      newNumber = 0;
+      for (
+        let k = newArrayOfNumbers.length - 1, j = 0;
+        k >= 0;
+        k -= 1, j += 1
+      ) {
+        newNumber += newArrayOfNumbers[k] * 10 ** j;
+      }
+      return newNumber;
+    }
+  }
+  return number;
 }
 
 module.exports = {
